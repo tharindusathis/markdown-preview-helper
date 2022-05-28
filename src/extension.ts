@@ -13,10 +13,42 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('markdown-preview-helper.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Markdown Preview Helper!');
+	let disposable = vscode.commands.registerCommand('markdown-preview-helper.toggle-preview-and-source', async () => {
+		
+		const activeTabInput = vscode.window.tabGroups.activeTabGroup.activeTab?.input || {};
+
+		if (activeTabInput instanceof vscode.TabInputWebview) {		// preview is active
+			console.error("Preview is active");
+
+			const activeLine = -1; // TODO: get active line
+
+			const editorThenable: Thenable<vscode.TextEditor> = vscode.commands.executeCommand('markdown.showSource')
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			
+			
+			const revealLineInEditor = (editor: vscode.TextEditor, line: number) => {
+				const position = new vscode.Position(line, 0);
+				const newSelection = new vscode.Selection(position, position);
+				editor.selection = newSelection;
+				editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+			};
+			
+			if (activeLine >= 0) {
+				const editor = await editorThenable;
+				if (editor) revealLineInEditor(editor, activeLine);
+			}
+			
+
+		} else if (activeTabInput instanceof vscode.TabInputText) { // source is active
+			console.error("Source is active");
+
+			await vscode.commands.executeCommand('workbench.action.files.save')
+			await vscode.commands.executeCommand('markdown.showPreview');
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+		} else {
+			console.error("Not active tab");
+		}
+
 	});
 
 	context.subscriptions.push(disposable);

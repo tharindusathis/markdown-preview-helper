@@ -3,6 +3,10 @@
 	"displayName": "Markdown Preview Helper",
 	"description": "Custamize usage of built-in markdown preview",
 	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tharindusathis/markdown-preview-helper"
+	},
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -10,14 +14,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:markdown-preview-helper.helloWorld"
+		"onLanguage:markdown"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "markdown-preview-helper.helloWorld",
-				"title": "Hello World"
+				"command": "markdown-preview-helper.toggle-preview-and-source",
+				"title": "Markdown: Toggle Preview and Source"
 			}
 		]
 	},
